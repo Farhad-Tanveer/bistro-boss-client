@@ -3,21 +3,32 @@ import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
+import Swal from "sweetalert2";
 
 const SignUp = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
-  const { createUser } = useContext(AuthContext);
+  const { createUser, updateUserProfile } = useContext(AuthContext);
 
   const onSubmit = (data) => {
     console.log(data);
     createUser(data.email, data.password).then((result) => {
       const loggedUser = result.user;
       console.log(loggedUser);
+      updateUserProfile(data.name, data.photoURL)
+        .then(() => {
+          console.log("user profile info updated");
+          reset();
+          Swal.fire("Successfully Signup");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     });
   };
   return (
@@ -42,6 +53,20 @@ const SignUp = () => {
                 />
                 {errors.name && (
                   <span className=" text-red-600">Name field is required</span>
+                )}
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Photo URL</span>
+                </label>
+                <input
+                  {...register("photoURL", { required: true })}
+                  type="text"
+                  placeholder="photo URL"
+                  className="input input-bordered"
+                />
+                {errors.photoURL && (
+                  <span className=" text-red-600">Photo URL is required</span>
                 )}
               </div>
               <div className="form-control">

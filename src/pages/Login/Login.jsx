@@ -1,21 +1,25 @@
 import React, { useState } from "react";
 import { useContext } from "react";
-import { useRef } from "react";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   loadCaptchaEnginge,
   LoadCanvasTemplate,
   validateCaptcha,
 } from "react-simple-captcha";
 import { AuthContext } from "../../providers/AuthProvider";
+import Swal from "sweetalert2";
 
 const Login = () => {
-  const captchaRef = useRef(null);
   const [disable, setDisable] = useState(true);
 
-  const { user, signIn } = useContext(AuthContext);
+  const { signIn } = useContext(AuthContext);
+
+  const naviate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
 
   useEffect(() => {
     loadCaptchaEnginge(6);
@@ -31,11 +35,13 @@ const Login = () => {
     signIn(email, password).then((result) => {
       const user = result.user;
       console.log(user);
+      Swal.fire("Successfully Login");
     });
+    naviate(from, { replace: true });
   };
 
-  const handleValidateCaptcha = () => {
-    const value = captchaRef.current.value;
+  const handleValidateCaptcha = (e) => {
+    const value = e.target.value;
     if (validateCaptcha(value) == true) {
       setDisable(false);
     }
@@ -84,23 +90,16 @@ const Login = () => {
                   <LoadCanvasTemplate />
                 </label>
                 <input
-                  ref={captchaRef}
+                  onBlur={handleValidateCaptcha}
                   type="text"
                   placeholder="type here"
                   name="captcha"
-                  required
                   className="input input-bordered"
                 />
-                <button
-                  onClick={handleValidateCaptcha}
-                  className="btn btn-outline btn-xs mt-5"
-                >
-                  Validate
-                </button>
               </div>
               <div className="form-control mt-6">
                 <input
-                  disabled={disable}
+                  disabled={false} /* TODO: make button disable for captcha */
                   className="btn btn-primary"
                   type="submit"
                   value="Login"
