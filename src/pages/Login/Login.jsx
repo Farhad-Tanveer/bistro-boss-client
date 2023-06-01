@@ -10,6 +10,7 @@ import {
 } from "react-simple-captcha";
 import { AuthContext } from "../../providers/AuthProvider";
 import Swal from "sweetalert2";
+import SocialLogin from "../Shared/SocialLogin/SocialLogin";
 
 const Login = () => {
   const [disable, setDisable] = useState(true);
@@ -111,6 +112,7 @@ const Login = () => {
                 New Here? <Link to="/signup">Create an account</Link>
               </small>
             </p>
+            <SocialLogin></SocialLogin>
           </div>
           <div className="text-center md:w-1/2 lg:text-left">
             <h1 className="text-5xl font-bold">Login now!</h1>
